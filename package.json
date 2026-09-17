@@ -1,0 +1,23 @@
+{
+  "name": "node-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Node.js containerization fixture for the aws-cicd-framework pipeline",
+  "license": "MIT",
+  "type": "module",
+  "main": "src/index.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "lint": "node --check src/index.js",
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "dayjs": "1.11.23"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/loriamichaelj/aws-cicd-demo-node-app.git"
+  }
+}
