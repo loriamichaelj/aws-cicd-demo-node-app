@@ -1,0 +1,17 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  deploy:
+    environment: dev
+    uses: loriamichaelj/aws-cicd-framework/.github/workflows/deploy.yml@dev
+    with:
+      app-name: node-app
+      language: node
+      environment: dev
+      aws-region: us-east-1
+    secrets: inherit
