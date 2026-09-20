@@ -6,9 +6,12 @@ A Node.js containerization fixture that consumes
 This repository carries **no functional application logic, by design**. It exists to give
 the framework's build, lint, and containerization steps a real artifact to operate on.
 
-`main` is the default branch and holds only this README — an entry point and signpost,
-not the deliverable. The actual Dockerfile, source, tests, and pipeline caller live on the
-`dev`/`stage`/`prod` branches.
+`main` is the default branch and holds this README plus the `.github/workflows/` files —
+not the deliverable itself (no Dockerfile, source, or tests here). The workflow files are
+present only because GitHub requires a `workflow_dispatch` workflow to exist on the
+default branch to be manually triggerable at all, even when you then run a different
+branch's version of it via the branch selector. The actual Dockerfile, source, and tests
+live on the `dev`/`stage`/`prod` branches.
 
 ## Branches
 

@@ -1,0 +1,44 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    types:
+      - closed
+    branches:
+      - stage
+      - prod
+
+jobs:
+  detect-environment:
+    if: |
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.detect.outputs.environment }}
+    steps:
+      - id: detect
+        run: |
+          if [[ "${GITHUB_REF_NAME}" == "dev" ]]; then
+            echo "environment=dev" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.event.pull_request.base.ref }}" == "stage" ]]; then
+            echo "environment=stage" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.event.pull_request.base.ref }}" == "prod" ]]; then
+            echo "environment=prod" >> "$GITHUB_OUTPUT"
+          fi
+
+  deploy:
+    needs: detect-environment
+    permissions:
+      id-token: write
+      contents: read
+    uses: loriamichaelj/aws-cicd-framework/.github/workflows/deploy.yml@dev
+    with:
+      app-name: node-app
+      language: node
+      environment: ${{ needs.detect-environment.outputs.environment }}
+      aws-region: us-east-1
+    secrets: inherit
