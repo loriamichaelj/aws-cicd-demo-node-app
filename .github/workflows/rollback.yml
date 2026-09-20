@@ -1,0 +1,30 @@
+name: Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to roll back"
+        required: true
+        type: choice
+        options:
+          - dev
+          - stage
+          - prod
+      target-sha:
+        description: "Git SHA to roll back to (omit to roll back to the previous deploy)"
+        required: false
+        type: string
+
+jobs:
+  rollback:
+    permissions:
+      id-token: write
+      contents: read
+    uses: loriamichaelj/aws-cicd-framework/.github/workflows/rollback.yml@v1
+    with:
+      app-name: node-app
+      environment: ${{ inputs.environment }}
+      target-sha: ${{ inputs.target-sha }}
+      aws-region: us-east-1
+    secrets: inherit
