@@ -15,11 +15,13 @@ prefix only for grouping on GitHub.
 ## Layout
 
 ```
-src/index.js        no-op entrypoint; prints a build descriptor and exits 0
-package.json        one real dependency (dayjs), ESM, Node 20
-package-lock.json   committed lockfile; the image builds with npm ci
-Dockerfile          multi-stage, non-root, healthchecked
-.dockerignore       keeps VCS metadata and node_modules out of the build context
+src/index.js                   no-op entrypoint; prints a build descriptor and exits 0
+test/index.test.js             unit test exercising describeBuild()
+package.json                   one real dependency (dayjs), ESM, Node 20
+package-lock.json              committed lockfile; the image builds with npm ci
+Dockerfile                     multi-stage, non-root, healthchecked
+.dockerignore                  keeps VCS metadata and node_modules out of the build context
+.github/workflows/deploy.yml   thin caller: push-to-dev triggers aws-cicd-framework's deploy.yml
 ```
 
 ## Dockerfile discipline
@@ -48,6 +50,7 @@ These are the same commands the pipeline runs, so failures reproduce locally:
 
 ```bash
 node --check src/index.js
+npm test
 docker build -t node-app:local .
 docker run --rm node-app:local
 hadolint Dockerfile
