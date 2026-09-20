@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 
 const APP_NAME = "node-app";
 
-function describeBuild() {
+export function describeBuild() {
   return {
     app: APP_NAME,
     gitSha: process.env.GIT_SHA ?? "unknown",

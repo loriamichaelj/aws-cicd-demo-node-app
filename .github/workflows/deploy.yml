@@ -7,7 +7,6 @@ on:
 
 jobs:
   deploy:
-    environment: dev
     uses: loriamichaelj/aws-cicd-framework/.github/workflows/deploy.yml@dev
     with:
       app-name: node-app
