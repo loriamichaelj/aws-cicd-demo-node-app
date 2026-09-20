@@ -15,13 +15,14 @@ prefix only for grouping on GitHub.
 ## Layout
 
 ```
-src/index.js                   no-op entrypoint; prints a build descriptor and exits 0
-test/index.test.js             unit test exercising describeBuild()
-package.json                   one real dependency (dayjs), ESM, Node 20
-package-lock.json              committed lockfile; the image builds with npm ci
-Dockerfile                     multi-stage, non-root, healthchecked
-.dockerignore                  keeps VCS metadata and node_modules out of the build context
-.github/workflows/deploy.yml   thin caller: push-to-dev, PR-merge to stage/prod
+src/index.js                     no-op entrypoint; prints a build descriptor and exits 0
+test/index.test.js               unit test exercising describeBuild()
+package.json                     one real dependency (dayjs), ESM, Node 20
+package-lock.json                committed lockfile; the image builds with npm ci
+Dockerfile                       multi-stage, non-root, healthchecked
+.dockerignore                    keeps VCS metadata and node_modules out of the build context
+.github/workflows/deploy.yml     thin caller: push-to-dev, PR-merge to stage/prod
+.github/workflows/rollback.yml   thin caller: manual dispatch, re-points current.json
 ```
 
 ## Dockerfile discipline
