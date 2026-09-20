@@ -1,0 +1,34 @@
+name: Promote
+
+on:
+  workflow_dispatch:
+    inputs:
+      source-environment:
+        description: "Environment to promote from"
+        required: true
+        type: choice
+        options:
+          - dev
+          - stage
+      target-environment:
+        description: "Environment to promote to"
+        required: true
+        type: choice
+        options:
+          - stage
+          - prod
+      git-sha:
+        description: "Git SHA to promote (the tag on the image in source-environment)"
+        required: true
+        type: string
+
+jobs:
+  promote:
+    uses: loriamichaelj/aws-cicd-framework/.github/workflows/promote.yml@dev
+    with:
+      app-name: node-app
+      source-environment: ${{ inputs.source-environment }}
+      target-environment: ${{ inputs.target-environment }}
+      git-sha: ${{ inputs.git-sha }}
+      aws-region: us-east-1
+    secrets: inherit
