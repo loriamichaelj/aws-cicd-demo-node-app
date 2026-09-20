@@ -72,9 +72,19 @@ the target from the PR's base branch), gated by that environment's required revi
 each environment rebuilds from its own branch state at merge time, rather than promoting
 a single shared artifact forward. All three environments are confirmed working
 end-to-end: `dev` → `stage` → `prod`, each a real PR merge triggering its own build, test,
-and S3 upload, reviewer-gated on `stage`/`prod`.
+S3 upload, and CloudWatch event, reviewer-gated on `stage`/`prod`. Manual rollback
+(`rollback.yml`) is confirmed working on `dev`; `stage`/`prod` rollback untested for this
+app specifically (identical code path already proven on `python-app`'s `stage`).
 
 This wasn't the original design — a `promote.yml` step that copied one built image
 forward without rebuilding was built and proven working first (for `python-app`), then
 deliberately retired in favor of this branch-based model. See `aws-cicd-framework`'s
 `docs/REQUIREMENTS.md` §8 for why.
+
+## Versioning
+
+`deploy.yml`/`rollback.yml` reference
+[`aws-cicd-framework`](https://github.com/loriamichaelj/aws-cicd-framework)`@v1` — a
+floating tag pointing at the latest compatible release (currently `v1.0.0`), not the
+framework's live `dev` branch. Framework changes only reach this repo once a new release
+moves that tag forward; see the framework's own README for what that release contains.
