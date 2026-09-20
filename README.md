@@ -21,8 +21,7 @@ package.json                   one real dependency (dayjs), ESM, Node 20
 package-lock.json              committed lockfile; the image builds with npm ci
 Dockerfile                     multi-stage, non-root, healthchecked
 .dockerignore                  keeps VCS metadata and node_modules out of the build context
-.github/workflows/deploy.yml   thin caller: push-to-dev triggers aws-cicd-framework's deploy.yml
-.github/workflows/promote.yml  thin caller: manual dispatch triggers aws-cicd-framework's promote.yml
+.github/workflows/deploy.yml   thin caller: push-to-dev, PR-merge to stage/prod
 ```
 
 ## Dockerfile discipline
@@ -59,11 +58,20 @@ hadolint Dockerfile
 
 ## Branches
 
-`devmain` is the default and holds the deliverable. `dev` is where work happens; the
-default pull request path is `dev` → `devmain`.
+`main` is the default branch and holds only a signpost README, not the deliverable — see
+its own version of this file. `dev` is where work happens; the default pull request path
+is `dev` → `main`, though merging into `main` doesn't trigger anything (no workflow
+watches it).
 
-`stage` and `prod` exist as **GitHub Environments**, not branches. Promotion to them is a
-manually dispatched `promote.yml` run that copies the already-built image tarball forward
-(a server-side S3-to-S3 copy, not a re-download) behind an approval gate — the image is
-never rebuilt per environment, so the object at `prod` is provably the exact same bytes
-built on `dev`. `stage`/`prod` Environments aren't created yet, so this path is untested.
+`stage` and `prod` are real branches *and* GitHub Environments. Merging a PR into either
+triggers that environment's own independent build (a `detect-environment` job resolves
+the target from the PR's base branch), gated by that environment's required reviewer —
+each environment rebuilds from its own branch state at merge time, rather than promoting
+a single shared artifact forward. Neither `stage` nor `prod` has been validated for this
+repo yet — the branches exist, but their Environment setup (reviewer, variables, trust
+policy entry) is unconfirmed.
+
+This wasn't the original design — a `promote.yml` step that copied one built image
+forward without rebuilding was built and proven working first (for `python-app`), then
+deliberately retired in favor of this branch-based model. See `aws-cicd-framework`'s
+`docs/REQUIREMENTS.md` §8 for why.
