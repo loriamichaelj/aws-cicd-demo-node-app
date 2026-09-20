@@ -59,10 +59,12 @@ hadolint Dockerfile
 
 ## Branches
 
-`main` is the default branch and holds only a signpost README, not the deliverable — see
-its own version of this file. `dev` is where work happens; the default pull request path
-is `dev` → `main`, though merging into `main` doesn't trigger anything (no workflow
-watches it).
+`main` is the default branch and holds a signpost README plus `.github/workflows/` (present
+only so `workflow_dispatch` can find `rollback.yml` — GitHub requires that file to exist
+on the default branch to be manually triggerable at all) — not the deliverable itself, see
+its own version of this file for the exact contents. `dev` is where work happens; the
+default pull request path is `dev` → `main`, though merging into `main` doesn't trigger
+anything (`deploy.yml`'s triggers don't watch `main`).
 
 `stage` and `prod` are real branches *and* GitHub Environments. Merging a PR into either
 triggers that environment's own independent build (a `detect-environment` job resolves
