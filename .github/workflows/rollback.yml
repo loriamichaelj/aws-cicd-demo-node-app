@@ -21,7 +21,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    uses: loriamichaelj/aws-cicd-framework/.github/workflows/rollback.yml@dev
+    uses: loriamichaelj/aws-cicd-framework/.github/workflows/rollback.yml@v1
     with:
       app-name: node-app
       environment: ${{ inputs.environment }}
