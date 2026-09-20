@@ -15,13 +15,14 @@ prefix only for grouping on GitHub.
 ## Layout
 
 ```
-src/index.js                   no-op entrypoint; prints a build descriptor and exits 0
-test/index.test.js             unit test exercising describeBuild()
-package.json                   one real dependency (dayjs), ESM, Node 20
-package-lock.json              committed lockfile; the image builds with npm ci
-Dockerfile                     multi-stage, non-root, healthchecked
-.dockerignore                  keeps VCS metadata and node_modules out of the build context
-.github/workflows/deploy.yml   thin caller: push-to-dev, PR-merge to stage/prod
+src/index.js                     no-op entrypoint; prints a build descriptor and exits 0
+test/index.test.js               unit test exercising describeBuild()
+package.json                     one real dependency (dayjs), ESM, Node 20
+package-lock.json                committed lockfile; the image builds with npm ci
+Dockerfile                       multi-stage, non-root, healthchecked
+.dockerignore                    keeps VCS metadata and node_modules out of the build context
+.github/workflows/deploy.yml     thin caller: push-to-dev, PR-merge to stage/prod
+.github/workflows/rollback.yml   thin caller: manual dispatch, re-points current.json
 ```
 
 ## Dockerfile discipline
@@ -58,18 +59,20 @@ hadolint Dockerfile
 
 ## Branches
 
-`main` is the default branch and holds only a signpost README, not the deliverable — see
-its own version of this file. `dev` is where work happens; the default pull request path
-is `dev` → `main`, though merging into `main` doesn't trigger anything (no workflow
-watches it).
+`main` is the default branch and holds a signpost README plus `.github/workflows/` (present
+only so `workflow_dispatch` can find `rollback.yml` — GitHub requires that file to exist
+on the default branch to be manually triggerable at all) — not the deliverable itself, see
+its own version of this file for the exact contents. `dev` is where work happens; the
+default pull request path is `dev` → `main`, though merging into `main` doesn't trigger
+anything (`deploy.yml`'s triggers don't watch `main`).
 
 `stage` and `prod` are real branches *and* GitHub Environments. Merging a PR into either
 triggers that environment's own independent build (a `detect-environment` job resolves
 the target from the PR's base branch), gated by that environment's required reviewer —
 each environment rebuilds from its own branch state at merge time, rather than promoting
-a single shared artifact forward. Neither `stage` nor `prod` has been validated for this
-repo yet — the branches exist, but their Environment setup (reviewer, variables, trust
-policy entry) is unconfirmed.
+a single shared artifact forward. All three environments are confirmed working
+end-to-end: `dev` → `stage` → `prod`, each a real PR merge triggering its own build, test,
+and S3 upload, reviewer-gated on `stage`/`prod`.
 
 This wasn't the original design — a `promote.yml` step that copied one built image
 forward without rebuilding was built and proven working first (for `python-app`), then
