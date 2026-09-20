@@ -24,6 +24,9 @@ on:
 
 jobs:
   promote:
+    permissions:
+      id-token: write
+      contents: read
     uses: loriamichaelj/aws-cicd-framework/.github/workflows/promote.yml@dev
     with:
       app-name: node-app
