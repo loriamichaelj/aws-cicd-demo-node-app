@@ -67,9 +67,9 @@ watches it).
 triggers that environment's own independent build (a `detect-environment` job resolves
 the target from the PR's base branch), gated by that environment's required reviewer —
 each environment rebuilds from its own branch state at merge time, rather than promoting
-a single shared artifact forward. Neither `stage` nor `prod` has been validated for this
-repo yet — the branches exist, but their Environment setup (reviewer, variables, trust
-policy entry) is unconfirmed.
+a single shared artifact forward. All three environments are confirmed working
+end-to-end: `dev` → `stage` → `prod`, each a real PR merge triggering its own build, test,
+and S3 upload, reviewer-gated on `stage`/`prod`.
 
 This wasn't the original design — a `promote.yml` step that copied one built image
 forward without rebuilding was built and proven working first (for `python-app`), then
