@@ -22,6 +22,7 @@ package-lock.json              committed lockfile; the image builds with npm ci
 Dockerfile                     multi-stage, non-root, healthchecked
 .dockerignore                  keeps VCS metadata and node_modules out of the build context
 .github/workflows/deploy.yml   thin caller: push-to-dev triggers aws-cicd-framework's deploy.yml
+.github/workflows/promote.yml  thin caller: manual dispatch triggers aws-cicd-framework's promote.yml
 ```
 
 ## Dockerfile discipline
@@ -58,9 +59,11 @@ hadolint Dockerfile
 
 ## Branches
 
-`main` is the default and holds the deliverable. `dev` is where work happens.
+`devmain` is the default and holds the deliverable. `dev` is where work happens; the
+default pull request path is `dev` → `devmain`.
 
 `stage` and `prod` exist as **GitHub Environments**, not branches. Promotion to them is a
-manually dispatched workflow that copies the already-built artifact forward behind an
-approval gate — the image is never rebuilt per environment, so the image digest referenced
-in `prod` is provably identical to the one built on `dev`.
+manually dispatched `promote.yml` run that copies the already-built image tarball forward
+(a server-side S3-to-S3 copy, not a re-download) behind an approval gate — the image is
+never rebuilt per environment, so the object at `prod` is provably the exact same bytes
+built on `dev`. `stage`/`prod` Environments aren't created yet, so this path is untested.
