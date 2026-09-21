@@ -1,5 +1,7 @@
 name: Deploy
 
+# Triggers: direct pushes to dev auto-deploy; stage/prod deploy only when a
+# PR targeting that branch is merged (not just closed unmerged).
 on:
   push:
     branches:
@@ -12,6 +14,8 @@ on:
       - prod
 
 jobs:
+  # Map the triggering branch/PR-base to a deploy environment name. Only runs
+  # for direct pushes or actually-merged PRs (see detect-environment's `if`).
   detect-environment:
     if: |
       github.event_name == 'push' ||
@@ -30,6 +34,8 @@ jobs:
             echo "environment=prod" >> "$GITHUB_OUTPUT"
           fi
 
+  # Delegate the actual build/test/deploy pipeline to the shared framework
+  # workflow, pinned to the v1 tag of aws-cicd-framework.
   deploy:
     needs: detect-environment
     permissions:

@@ -1,5 +1,7 @@
 name: Rollback
 
+# Manually triggered from the Actions tab - pick an environment and
+# optionally a specific git SHA to roll back to.
 on:
   workflow_dispatch:
     inputs:
@@ -17,6 +19,7 @@ on:
         type: string
 
 jobs:
+  # Delegate to the shared framework rollback workflow, pinned to v1.
   rollback:
     permissions:
       id-token: write
